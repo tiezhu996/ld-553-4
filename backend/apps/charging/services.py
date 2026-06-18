@@ -1,4 +1,9 @@
-from apps.charging.models import ChargingPile
+import uuid
+
+from django.db.models import Sum
+from django.utils import timezone
+
+from apps.charging.models import ChargingPile, ChargingRecord
 from apps.common.constants.enums import PileStatus
 from apps.common.exceptions import BusinessException
 
@@ -19,3 +24,21 @@ class ChargingService:
         pile.price_per_kwh = price
         pile.save(update_fields=["price_per_kwh"])
         return pile
+
+    @staticmethod
+    def create_record(validated_data: dict) -> ChargingRecord:
+        record_no = f"CR{timezone.now().strftime('%Y%m%d%H%M%S')}{uuid.uuid4().hex[:6].upper()}"
+        record = ChargingRecord.objects.create(record_no=record_no, **validated_data)
+        return record
+
+    @staticmethod
+    def today_stats() -> dict:
+        today = timezone.now().date()
+        records = ChargingRecord.objects.filter(created_at__date=today)
+        total_kwh = records.aggregate(total=Sum("kwh"))["total"] or 0
+        total_fee = records.aggregate(total=Sum("total_fee"))["total"] or 0
+        return {
+            "today_charging_kwh": total_kwh,
+            "today_charging_revenue": total_fee,
+            "today_charging_count": records.count(),
+        }

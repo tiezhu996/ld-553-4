@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ChargingPile } from '../models/charging-pile.model';
+import { ChargingRecord } from '../models/charging-record.model';
 import { DashboardOverview } from '../models/dashboard.model';
 import { MaintenanceRecord } from '../models/maintenance-record.model';
 import { TripOrder } from '../models/trip-order.model';
@@ -19,6 +20,9 @@ export class ApiService {
   listPiles(filters: Record<string, string> = {}): Observable<ChargingPile[]> { return this.http.get<ChargingPile[]>(`${environment.apiBaseUrl}/charging-piles/`, { params: new HttpParams({ fromObject: filters }) }); }
   pileLocations(): Observable<ChargingPile[]> { return this.http.get<ChargingPile[]>(`${environment.apiBaseUrl}/charging-piles/locations/`); }
   patchPileStatus(id: number, status: string): Observable<ChargingPile> { return this.http.patch<ChargingPile>(`${environment.apiBaseUrl}/charging-piles/${id}/status/`, { status }); }
+  listChargingRecords(filters: Record<string, string> = {}): Observable<ChargingRecord[]> { return this.http.get<ChargingRecord[]>(`${environment.apiBaseUrl}/charging-records/`, { params: new HttpParams({ fromObject: filters }) }); }
+  createChargingRecord(data: Partial<ChargingRecord>): Observable<ChargingRecord> { return this.http.post<ChargingRecord>(`${environment.apiBaseUrl}/charging-records/`, data); }
+  chargingRecordTodayStats(): Observable<{ today_charging_kwh: number; today_charging_revenue: number; today_charging_count: number }> { return this.http.get<any>(`${environment.apiBaseUrl}/charging-records/today-stats/`); }
   listOrders(filters: Record<string, string> = {}): Observable<TripOrder[]> { return this.http.get<TripOrder[]>(`${environment.apiBaseUrl}/orders/`, { params: new HttpParams({ fromObject: filters }) }); }
   patchOrderStatus(id: number, status: string): Observable<TripOrder> { return this.http.patch<TripOrder>(`${environment.apiBaseUrl}/orders/${id}/status/`, { status }); }
   dashboardOverview(): Observable<DashboardOverview> { return this.http.get<DashboardOverview>(`${environment.apiBaseUrl}/dashboard/overview/`); }

@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from apps.charging.models import ChargingPile
+from apps.charging.models import ChargingPile, ChargingRecord
 from apps.common.constants.enums import OrderStatus, PaymentStatus, PileStatus, PileType, VehicleStatus, VehicleType
 from apps.orders.models import TripOrder
 from apps.users.models import User
@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 "lng": Decimal("121.4737000"),
             },
         )
-        ChargingPile.objects.get_or_create(
+        pile, _ = ChargingPile.objects.get_or_create(
             code="CP-SH-001",
             defaults={
                 "location": "人民广场地下充电站",
@@ -62,6 +62,33 @@ class Command(BaseCommand):
                 "fare": Decimal("82.00"),
                 "status": OrderStatus.COMPLETED,
                 "payment_status": PaymentStatus.PAID,
+            },
+        )
+        now = timezone.now()
+        ChargingRecord.objects.get_or_create(
+            record_no="CRDEMO001",
+            defaults={
+                "pile": pile,
+                "vehicle": vehicle,
+                "plate_number": vehicle.plate_number,
+                "kwh": Decimal("45.50"),
+                "duration_minutes": 68,
+                "total_fee": Decimal("61.43"),
+                "start_time": now.replace(hour=8, minute=30, second=0, microsecond=0),
+                "end_time": now.replace(hour=9, minute=38, second=0, microsecond=0),
+            },
+        )
+        ChargingRecord.objects.get_or_create(
+            record_no="CRDEMO002",
+            defaults={
+                "pile": pile,
+                "vehicle": None,
+                "plate_number": "沪B-X8821",
+                "kwh": Decimal("32.80"),
+                "duration_minutes": 45,
+                "total_fee": Decimal("44.28"),
+                "start_time": now.replace(hour=10, minute=15, second=0, microsecond=0),
+                "end_time": now.replace(hour=11, minute=0, second=0, microsecond=0),
             },
         )
         self.stdout.write(self.style.SUCCESS("TransitHub demo data seeded."))

@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from apps.charging.views import ChargingPileViewSet
+from apps.charging.views import ChargingPileViewSet, ChargingRecordViewSet
 from apps.common.views import AuditLogViewSet, health
 from apps.maintenance.views import MaintenanceRecordViewSet
 from apps.orders.views import TripOrderViewSet
@@ -11,6 +11,7 @@ from apps.vehicles.views import VehicleViewSet
 router = DefaultRouter()
 router.register("vehicles", VehicleViewSet, basename="vehicles")
 router.register("charging-piles", ChargingPileViewSet, basename="charging-piles")
+router.register("charging-records", ChargingRecordViewSet, basename="charging-records")
 router.register("orders", TripOrderViewSet, basename="orders")
 router.register("maintenance-records", MaintenanceRecordViewSet, basename="maintenance-records")
 router.register("users", UserViewSet, basename="users")

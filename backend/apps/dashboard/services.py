@@ -1,7 +1,7 @@
 from django.db.models import Count, Sum
 from django.utils import timezone
 
-from apps.charging.models import ChargingPile
+from apps.charging.models import ChargingPile, ChargingRecord
 from apps.common.constants.enums import OrderStatus, PaymentStatus, PileStatus, VehicleStatus
 from apps.orders.models import TripOrder
 from apps.vehicles.models import Vehicle
@@ -13,12 +13,18 @@ class DashboardService:
         today = timezone.now().date()
         total_piles = ChargingPile.objects.count() or 1
         used_piles = ChargingPile.objects.filter(status=PileStatus.CHARGING).count()
+        charging_records_today = ChargingRecord.objects.filter(created_at__date=today)
+        today_charging_kwh = charging_records_today.aggregate(total=Sum("kwh"))["total"] or 0
+        today_charging_revenue = charging_records_today.aggregate(total=Sum("total_fee"))["total"] or 0
         return {
             "vehicles_online": Vehicle.objects.filter(status=VehicleStatus.OPERATING).count(),
             "vehicles_total": Vehicle.objects.count(),
             "today_orders": TripOrder.objects.filter(created_at__date=today).count(),
             "today_revenue": TripOrder.objects.filter(created_at__date=today, payment_status=PaymentStatus.PAID).aggregate(total=Sum("fare"))["total"] or 0,
             "pile_utilization": round(used_piles / total_piles * 100, 2),
+            "today_charging_kwh": today_charging_kwh,
+            "today_charging_revenue": today_charging_revenue,
+            "today_charging_count": charging_records_today.count(),
         }
 
     @staticmethod

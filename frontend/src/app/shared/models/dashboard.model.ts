@@ -4,4 +4,7 @@ export interface DashboardOverview {
   today_orders: number;
   today_revenue: number;
   pile_utilization: number;
+  today_charging_kwh: number;
+  today_charging_revenue: number;
+  today_charging_count: number;
 }

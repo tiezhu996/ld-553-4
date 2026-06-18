@@ -11,6 +11,7 @@ export class SidebarComponent {
     { label: '地图总览', path: '/map', roles: ['DRIVER', 'OPERATOR', 'ADMIN'] },
     { label: '车辆管理', path: '/vehicles', roles: ['DRIVER', 'OPERATOR', 'ADMIN'] },
     { label: '充电桩', path: '/charging', roles: ['DRIVER', 'OPERATOR', 'ADMIN'] },
+    { label: '充电记录', path: '/charging/records', roles: ['OPERATOR', 'ADMIN'] },
     { label: '出行订单', path: '/orders', roles: ['DRIVER', 'OPERATOR', 'ADMIN'] },
     { label: '运营大屏', path: '/dashboard', roles: ['OPERATOR', 'ADMIN'] }
   ] as any[];
